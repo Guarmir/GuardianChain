@@ -23,7 +23,7 @@ function Landing() {
         <strong>Custo aproximado:</strong> ~ US$2 por registro
       </p>
 
-      <Link to="/app">
+      <Link to="/register">
         <button style={{ marginTop: "1rem", padding: "0.7rem 1.5rem" }}>
           Registrar prova agora
         </button>

@@ -1,212 +1,46 @@
-import { useState } from "react";
-import { ethers } from "ethers";
-import {
-  GUARDIANCHAIN_ADDRESS,
-  GUARDIANCHAIN_ABI
-} from "./contracts/GuardianChain";
-import "./App.css";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Success from "./pages/Success";
+import Verify from "./pages/Verify";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import RefundPolicy from "./pages/RefundPolicy";
+import Footer from "./components/Footer";
+import { setLanguage } from "./i18n";
 
 function App() {
-  const [account, setAccount] = useState(null);
-  const [input, setInput] = useState("");
-  const [file, setFile] = useState(null);
-  const [status, setStatus] = useState("");
-  const [fee, setFee] = useState(null);
-
-  const [verifyResult, setVerifyResult] = useState(null);
-  const [verifyStatus, setVerifyStatus] = useState("");
-
-  async function connectWallet() {
-    try {
-      if (!window.ethereum) {
-        alert("MetaMask não encontrada");
-        return;
-      }
-
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const address = await signer.getAddress();
-
-      setAccount(address);
-      setStatus("Carteira conectada");
-
-      const contract = new ethers.Contract(
-        GUARDIANCHAIN_ADDRESS,
-        GUARDIANCHAIN_ABI,
-        signer
-      );
-
-      const f = await contract.getFee();
-      setFee(f);
-    } catch (error) {
-      console.error(error);
-      alert("Erro ao conectar MetaMask");
-    }
-  }
-
-  async function registerHash() {
-    try {
-      if (!input && !file) {
-        alert("Digite um texto ou selecione um arquivo");
-        return;
-      }
-
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-
-      const contract = new ethers.Contract(
-        GUARDIANCHAIN_ADDRESS,
-        GUARDIANCHAIN_ABI,
-        signer
-      );
-
-      let hash;
-      if (file) {
-        const buffer = await file.arrayBuffer();
-        hash = ethers.keccak256(new Uint8Array(buffer));
-      } else {
-        hash = ethers.keccak256(
-          ethers.toUtf8Bytes(input)
-        );
-      }
-
-      const currentFee = fee ?? await contract.getFee();
-
-      setStatus("Enviando transação...");
-
-      const tx = await contract.registerHash(hash, 0, {
-        value: currentFee
-      });
-
-      await tx.wait();
-
-      setStatus("Hash registrado com sucesso!");
-    } catch (err) {
-      console.error(err);
-      setStatus("Erro ao registrar hash");
-    }
-  }
-
-  async function verifyHash() {
-    try {
-      if (!input && !file) {
-        alert("Digite um texto ou selecione um arquivo");
-        return;
-      }
-
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const contract = new ethers.Contract(
-        GUARDIANCHAIN_ADDRESS,
-        GUARDIANCHAIN_ABI,
-        provider
-      );
-
-      let hash;
-      if (file) {
-        const buffer = await file.arrayBuffer();
-        hash = ethers.keccak256(new Uint8Array(buffer));
-      } else {
-        hash = ethers.keccak256(
-          ethers.toUtf8Bytes(input)
-        );
-      }
-
-      setVerifyStatus("Verificando...");
-
-      const result = await contract.verifyHash(hash);
-
-      setVerifyResult({
-        exists: result.exists,
-        creator: result.creator,
-        timestamp: result.timestamp,
-        recordType: result.recordType,
-      });
-
-      setVerifyStatus("");
-    } catch (err) {
-      console.error(err);
-      setVerifyStatus("Erro ao verificar hash");
-    }
-  }
-
   return (
-    <div style={{ padding: "2rem", maxWidth: "600px" }}>
-      <h1>GuardianChain</h1>
-      <p>
-        Prova de existência e autoria on-chain.  
-        Seu conteúdo permanece privado.
-      </p>
+    <Router>
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
 
-      {!account ? (
-        <button onClick={connectWallet}>
-          Conectar carteira
-        </button>
-      ) : (
-        <>
-          <p><strong>Carteira:</strong> {account}</p>
-
-          {fee && (
-            <p>
-              <strong>Custo por registro:</strong>{" "}
-              {ethers.formatEther(fee)} ETH
-            </p>
-          )}
-
-          <input
-            type="file"
-            onChange={(e) => setFile(e.target.files[0])}
-            style={{ marginBottom: "1rem" }}
-          />
-
-          <input
-            type="text"
-            placeholder="Ou digite um texto"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            style={{ width: "100%", marginBottom: "1rem" }}
-          />
-
-          <button onClick={registerHash}>
-            Registrar Hash
+        {/* Language Switch */}
+        <div style={{ position: "absolute", top: 20, right: 20 }}>
+          <button onClick={() => setLanguage("pt")} style={{ marginRight: "5px" }}>
+            PT
           </button>
-
-          <button
-            onClick={verifyHash}
-            style={{ marginLeft: "1rem" }}
-          >
-            Verificar Hash
+          <button onClick={() => setLanguage("en")}>
+            EN
           </button>
+        </div>
 
-          <p>{status}</p>
+        {/* Main Content */}
+        <div style={{ flex: 1 }}>
+          <Routes>
+            <Route path="/" element={<Navigate to="/success" />} />
+            <Route path="/success" element={<Success />} />
+            <Route path="/verify/:hash" element={<Verify />} />
 
-          {verifyStatus && <p>{verifyStatus}</p>}
+            {/* Legal Pages */}
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/refund-policy" element={<RefundPolicy />} />
+          </Routes>
+        </div>
 
-          {verifyResult && (
-            <div style={{ marginTop: "1rem" }}>
-              {verifyResult.exists ? (
-                <>
-                  <p><strong>Autor:</strong> {verifyResult.creator}</p>
-                  <p>
-                    <strong>Data:</strong>{" "}
-                    {new Date(
-                      Number(verifyResult.timestamp) * 1000
-                    ).toLocaleString()}
-                  </p>
-                  <p>
-                    <strong>Tipo:</strong>{" "}
-                    {verifyResult.recordType === 0 ? "Documento" : "Outro"}
-                  </p>
-                </>
-              ) : (
-                <p>❌ Hash não registrado</p>
-              )}
-            </div>
-          )}
-        </>
-      )}
-    </div>
+        {/* Footer */}
+        <Footer />
+
+      </div>
+    </Router>
   );
 }
 

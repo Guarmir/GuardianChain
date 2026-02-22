@@ -1,14 +1,14 @@
 const hre = require("hardhat");
 
 async function main() {
-  const fee = hre.ethers.parseEther("0.01");
-
   const GuardianChain = await hre.ethers.getContractFactory("GuardianChain");
-  const guardianChain = await GuardianChain.deploy(fee);
 
-  await guardianChain.waitForDeployment();
+  const contract = await GuardianChain.deploy();
 
-  console.log("✅ GuardianChain deployed to:", guardianChain.target);
+  await contract.waitForDeployment();
+
+  const address = await contract.getAddress();
+  console.log("GuardianChain deployed to:", address);
 }
 
 main().catch((error) => {

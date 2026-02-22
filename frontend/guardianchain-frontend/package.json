@@ -11,9 +11,14 @@
   },
   "dependencies": {
     "ethers": "^6.16.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.0.0",
+    "nodemailer": "^8.0.1",
+    "qrcode": "^1.5.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-router-dom": "^7.10.1"
+    "react-router-dom": "^7.11.0",
+    "stripe": "^20.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

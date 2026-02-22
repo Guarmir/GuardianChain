@@ -1,0 +1,31 @@
+{
+  "terms.title": "Termos de Uso",
+  "terms.updated": "Última atualização: 21 de fevereiro de 2026",
+  "terms.aboutTitle": "1. Sobre o GuardianChain",
+  "terms.aboutText1": "GuardianChain é uma plataforma digital que registra hashes criptográficos na blockchain Polygon para comprovação de existência digital.",
+  "terms.aboutText2": "GuardianChain não armazena documentos dos usuários. Os arquivos são processados apenas para gerar o hash e descartados imediatamente.",
+  "terms.eligibilityTitle": "2. Elegibilidade",
+  "terms.eligibilityText": "Este serviço é destinado a pessoas com 18 anos ou mais.",
+  "terms.natureTitle": "3. Natureza do Serviço",
+  "terms.natureText": "GuardianChain fornece apenas registro de timestamp em blockchain. Não substitui cartórios nem oferece aconselhamento jurídico.",
+  "terms.paymentTitle": "4. Pagamentos",
+  "terms.paymentText": "Todos os pagamentos são processados via Stripe e não são reembolsáveis após o registro na blockchain.",
+  "terms.contactTitle": "5. Contato",
+
+  "privacy.title": "Política de Privacidade",
+  "privacy.updated": "Última atualização: 21 de fevereiro de 2026",
+  "privacy.dataTitle": "Dados Coletados",
+  "privacy.dataText": "O GuardianChain coleta apenas:",
+  "privacy.email": "Endereço de email",
+  "privacy.logs": "Logs técnicos (IP, data e hora)",
+  "privacy.hash": "Hash criptográfico",
+  "privacy.noStore": "O GuardianChain não armazena documentos dos usuários.",
+  "privacy.purposeTitle": "Finalidade",
+  "privacy.purposeText": "Os dados são utilizados exclusivamente para envio do certificado e operação técnica.",
+  "privacy.contactTitle": "Contato",
+
+  "refund.title": "Política de Reembolso",
+  "refund.updated": "Última atualização: 21 de fevereiro de 2026",
+  "refund.text1": "Devido à natureza irreversível das transações em blockchain, os pagamentos não são reembolsáveis após o registro bem-sucedido.",
+  "refund.text2": "Em caso de falha técnica antes da confirmação na blockchain, o usuário pode solicitar suporte via suporte@guardianchain.online."
+}

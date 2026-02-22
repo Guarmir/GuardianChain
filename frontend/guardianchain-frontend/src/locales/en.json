@@ -1,0 +1,31 @@
+{
+  "terms.title": "Terms of Use",
+  "terms.updated": "Last updated: February 21, 2026",
+  "terms.aboutTitle": "1. About GuardianChain",
+  "terms.aboutText1": "GuardianChain is a digital platform that registers cryptographic hashes on the Polygon blockchain for proof of existence purposes.",
+  "terms.aboutText2": "GuardianChain does not store user documents. Files are processed only to generate a hash and are immediately discarded.",
+  "terms.eligibilityTitle": "2. Eligibility",
+  "terms.eligibilityText": "This service is intended for individuals 18 years or older.",
+  "terms.natureTitle": "3. Nature of the Service",
+  "terms.natureText": "GuardianChain provides blockchain timestamp registration only. It does not replace notary services or provide legal advice.",
+  "terms.paymentTitle": "4. Payments",
+  "terms.paymentText": "All payments are processed via Stripe and are non-refundable after blockchain registration is completed.",
+  "terms.contactTitle": "5. Contact",
+
+  "privacy.title": "Privacy Policy",
+  "privacy.updated": "Last updated: February 21, 2026",
+  "privacy.dataTitle": "Data Collected",
+  "privacy.dataText": "GuardianChain collects only:",
+  "privacy.email": "Email address",
+  "privacy.logs": "Technical logs (IP, date and time)",
+  "privacy.hash": "Cryptographic hash",
+  "privacy.noStore": "GuardianChain does not store user documents.",
+  "privacy.purposeTitle": "Purpose",
+  "privacy.purposeText": "Data is used solely for certificate delivery and technical operation.",
+  "privacy.contactTitle": "Contact",
+
+  "refund.title": "Refund Policy",
+  "refund.updated": "Last updated: February 21, 2026",
+  "refund.text1": "Due to the irreversible nature of blockchain transactions, payments are non-refundable after successful registration.",
+  "refund.text2": "In case of technical failure before blockchain confirmation, users may request assistance via support@guardianchain.online."
+}

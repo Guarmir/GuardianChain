@@ -1,86 +1,25 @@
-A    // SPDX-License-Identifier: MIT
-    pragma solidity ^0.8.28;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
 
-    contract GuardianChain {
-    address public owner;
-    uint256 public fee;
-
-    enum RecordType {
-        DOCUMENT,
-        EVENT,
-        ALERT
-    }
-
-    struct Record {
-        bool exists;
-        address creator;
+contract GuardianChain {
+    struct Proof {
+        address author;
         uint256 timestamp;
-        RecordType recordType;
     }
 
-    mapping(bytes32 => Record) private records;
-    mapping(address => bytes32[]) private userRecords;
+    mapping(bytes32 => Proof) private proofs;
 
-    event HashRegistered(
-        bytes32 indexed hash,
-        address indexed creator,
-        RecordType recordType,
-        uint256 timestamp
-    );
+    event ProofRegistered(address indexed author, bytes32 indexed hash);
 
-    constructor(uint256 _fee) {
-        owner = msg.sender;
-        fee = _fee;
+    function registerProof(bytes32 hash) external {
+        require(proofs[hash].timestamp == 0, "Already registered");
+        proofs[hash] = Proof(msg.sender, block.timestamp);
+        emit ProofRegistered(msg.sender, hash);
     }
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Not owner");
-        _;
+    function getProof(bytes32 hash) external view returns (address, uint256) {
+        Proof memory p = proofs[hash];
+        require(p.timestamp != 0, "Proof not found");
+        return (p.author, p.timestamp);
     }
-
-    function registerHash(bytes32 hash, RecordType recordType) external payable {
-        require(msg.value >= fee, "Insufficient fee");
-        require(!records[hash].exists, "Hash already registered");
-
-        records[hash] = Record({
-            exists: true,
-            creator: msg.sender,
-            timestamp: block.timestamp,
-            recordType: recordType
-        });
-
-        userRecords[msg.sender].push(hash);
-
-        emit HashRegistered(hash, msg.sender, recordType, block.timestamp);
-    }
-
-    function verifyHash(bytes32 hash)
-        external
-        view
-        returns (
-            bool exists,
-            address creator,
-            uint256 timestamp,
-            RecordType recordType
-        )
-    {
-        Record memory r = records[hash];
-        return (r.exists, r.creator, r.timestamp, r.recordType);
-    }
-
-    function getMyRecords() external view returns (bytes32[] memory) {
-        return userRecords[msg.sender];
-    }
-
-    function getFee() external view returns (uint256) {
-        return fee;
-    }
-
-    function setFee(uint256 newFee) external onlyOwner {
-        fee = newFee;
-    }
-
-    function withdraw() external onlyOwner {
-        payable(owner).transfer(address(this).balance);
-    }
-    }
+}
