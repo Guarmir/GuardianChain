@@ -1,4 +1,6 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Register from "./pages/Register";
+import Landing from "./pages/Landing";
 import Success from "./pages/Success";
 import Verify from "./pages/Verify";
 import Terms from "./pages/Terms";
@@ -25,7 +27,8 @@ function App() {
         {/* Main Content */}
         <div style={{ flex: 1 }}>
           <Routes>
-            <Route path="/" element={<Navigate to="/success" />} />
+            <Route path="/" element={<Landing />} />
+            <Route path="/register" element={<Register />} />
             <Route path="/success" element={<Success />} />
             <Route path="/verify/:hash" element={<Verify />} />
 

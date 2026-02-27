@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import { buffer } from "micro";
 import { ethers } from "ethers";
 import nodemailer from "nodemailer";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import QRCode from "qrcode";
 
 export const config = {
@@ -12,11 +12,10 @@ export const config = {
 };
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-const CONTRACT_ADDRESS = "0xef89BC5D33D6E65C47131a0331CcAF7e780Dc985";
-const RPC_URL = "https://polygon-rpc.com";
+const CONTRACT_ADDRESS = "0x243C4438841087D9bA135D7c1C7f54Ee77F2Ab20";
+const RPC_URL = process.env.POLYGON_RPC_URL;
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -39,10 +38,10 @@ export default async function handler(req, res) {
     const session = event.data.object;
 
     const email = session.customer_details.email;
-    const hash = session.metadata.hash;
+    const fileHash = session.metadata.hash;
 
     try {
-      // 🔹 Registrar na blockchain
+      // 🔹 Conectar Polygon
       const provider = new ethers.JsonRpcProvider(RPC_URL);
       const wallet = new ethers.Wallet(
         process.env.GUARDIANCHAIN_PRIVATE_KEY,
@@ -63,30 +62,44 @@ export default async function handler(req, res) {
 
       const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, wallet);
 
-      const tx = await contract.registerProof("0x" + hash);
-      await tx.wait();
+      // 🔹 Registrar na blockchain
+      const tx = await contract.registerProof("0x" + fileHash);
+      const receipt = await tx.wait();
 
-      // 🔹 Gerar PDF
-      const verificationUrl = `${process.env.BASE_URL}/verify/${hash}`;
+      const txHash = tx.hash;
+
+      // 🔹 Timestamp real da blockchain
+      const block = await provider.getBlock(receipt.blockNumber);
+      const blockTimestamp = new Date(block.timestamp * 1000).toISOString();
+
+      // 🔹 Link oficial PolygonScan
+      const polygonscanUrl = `https://polygonscan.com/tx/${txHash}`;
+
+      // 🔹 Gerar PDF institucional
       const doc = new jsPDF();
-
-      const qrDataUrl = await QRCode.toDataURL(verificationUrl);
 
       doc.setFontSize(18);
       doc.text("GuardianChain Digital Proof Certificate", 20, 20);
+
       doc.setFontSize(12);
       doc.text(
-        "This document certifies that a digital proof has been registered on the Polygon blockchain.",
+        "This document certifies that a digital proof has been permanently recorded on the Polygon Mainnet blockchain.",
         20,
         40
       );
-      doc.text(`Transaction Hash: ${hash}`, 20, 60);
-      doc.text(`Verification URL: ${verificationUrl}`, 20, 70);
-      doc.addImage(qrDataUrl, "PNG", 20, 90, 50, 50);
+
+      doc.text(`Network: Polygon Mainnet`, 20, 60);
+      doc.text(`Contract: ${CONTRACT_ADDRESS}`, 20, 70);
+      doc.text(`File Hash: ${fileHash}`, 20, 80);
+      doc.text(`Transaction Hash: ${txHash}`, 20, 90);
+      doc.text(`Timestamp (UTC): ${blockTimestamp}`, 20, 100);
+
+      const qrDataUrl = await QRCode.toDataURL(polygonscanUrl);
+      doc.addImage(qrDataUrl, "PNG", 20, 110, 50, 50);
 
       const pdfBuffer = Buffer.from(doc.output("arraybuffer"));
 
-      // 🔹 Enviar email
+      // 🔹 Enviar Email
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -98,8 +111,8 @@ export default async function handler(req, res) {
       await transporter.sendMail({
         from: `"GuardianChain" <${process.env.EMAIL_USER}>`,
         to: email,
-        subject: "Your GuardianChain Certificate",
-        text: "Your digital proof has been successfully registered.",
+        subject: "Your GuardianChain Blockchain Certificate",
+        text: `Your digital proof has been successfully recorded on Polygon Mainnet.\n\nTransaction: ${polygonscanUrl}`,
         attachments: [
           {
             filename: "guardianchain-certificate.pdf",
