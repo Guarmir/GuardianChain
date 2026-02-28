@@ -1,4 +1,4 @@
-import { HashRouter as Router } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import Register from "./pages/Register";
 import Landing from "./pages/Landing";
 import Success from "./pages/Success";
@@ -41,7 +41,6 @@ function App() {
 
         {/* Footer */}
         <Footer />
-
       </div>
     </Router>
   );

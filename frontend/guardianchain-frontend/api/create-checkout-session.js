@@ -26,7 +26,7 @@ export default async function handler(req, res) {
             product_data: {
               name: "GuardianChain Certificate Registration"
             },
-            unit_amount: 1000 // $10.00
+            unit_amount: 1000 // $10.00 (em centavos)
           },
           quantity: 1
         }
@@ -34,8 +34,8 @@ export default async function handler(req, res) {
       metadata: {
         hash
       },
-      success_url: `${process.env.BASE_URL}/success`,
-      cancel_url: `${process.env.BASE_URL}`
+      success_url: `${process.env.BASE_URL}/#/success`,
+      cancel_url: `${process.env.BASE_URL}/#/`
     });
 
     return res.status(200).json({ url: session.url });
